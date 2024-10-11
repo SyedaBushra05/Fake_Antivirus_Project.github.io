@@ -1,0 +1,103 @@
+import tkinter as tk
+from tkinter import messagebox
+import time
+import threading
+
+# Function to simulate the fake virus alert
+def show_fake_alert():
+    # This will display a fake virus detection pop-up
+    messagebox.showwarning("Alert!", "Virus detected on your system!\nPlease start the scan immediately.")
+    root.after(500, start_fake_antivirus)  # Start the fake antivirus GUI after the pop-up is closed
+
+# Function to simulate the fake antivirus scanning process
+def fake_scan():
+    scan_button.config(state=tk.DISABLED, bg="#b3b3b3")  # Disable the button during the scan
+    progress_label.config(text="Scan in progress...")
+    
+    # Simulating a scan using a progress bar update
+    for i in range(101):
+        progress_var.set(i)
+        progress_canvas.coords(progress_rect, 0, 0, 3 * i, 30)  # Adjusting progress bar width
+        root.update_idletasks()
+        time.sleep(0.1)  # Slowed down the scan process to 0.1 seconds per update
+
+    progress_label.config(text="Scan Complete!")
+    show_fake_results()
+
+def show_fake_results():
+    # After the scan, show a fake virus detection result
+    messagebox.showwarning("Warning!", "3 viruses detected!\nClick 'Fix' to remove.")
+    fix_button.config(state=tk.NORMAL, bg="#ff4d4d")  # Enable the "Fix" button
+
+def fake_fix():
+    # Slower fixing process with a progress bar
+    progress_label.config(text="Fixing issues...")
+
+    # Simulating fixing using a progress bar update
+    for i in range(101):
+        progress_var.set(i)
+        progress_canvas.coords(progress_rect, 0, 0, 3 * i, 30)  # Adjusting progress bar width
+        root.update_idletasks()
+        time.sleep(0.15)  # Slower fixing process (0.15 seconds per step)
+    
+    # Add a delay before showing the success pop-up
+    root.update_idletasks()
+    time.sleep(1)  # Short additional delay after fixing
+
+    # Simulate the fixing of fake viruses
+    messagebox.showinfo("Success", "Viruses removed successfully!")
+    fix_button.config(state=tk.DISABLED, bg="#b3b3b3")
+    scan_button.config(state=tk.NORMAL, bg="#4CAF50")  # Keep the scan button green
+
+# Function to run the fake scan in a thread
+def start_fake_scan():
+    threading.Thread(target=fake_scan).start()
+
+# Function to start the fake antivirus GUI after the pop-up
+def start_fake_antivirus():
+    # Create the main window
+    global root, scan_button, progress_canvas, progress_var, progress_label, progress_rect, fix_button
+
+    root = tk.Tk()
+    root.title("System Protection Scan")
+    root.geometry("400x250")
+    root.config(bg="#333333")  # Set the background color of the window
+
+    # Title Label
+    title_label = tk.Label(root, text="System Scan in Progress", font=("Helvetica", 16, "bold"), bg="#333333", fg="#FFFFFF")
+    title_label.pack(pady=10)
+
+    # Scan button
+    scan_button = tk.Button(root, text="Start Scan", command=start_fake_scan, font=("Helvetica", 12), bg="#ff4d4d", fg="white")  # Change to red
+    scan_button.pack(pady=10)
+
+    # Create a custom progress bar using Canvas
+    progress_canvas = tk.Canvas(root, width=300, height=30, bg="white")
+    progress_rect = progress_canvas.create_rectangle(0, 0, 0, 30, fill="#ff4d4d")  # Red progress bar
+    progress_canvas.pack(pady=10)
+
+    # Progress bar value (hidden, used for logic)
+    progress_var = tk.IntVar()
+
+    # Label to show scan status
+    progress_label = tk.Label(root, text="Click 'Start Scan' to begin", font=("Helvetica", 12), bg="#333333", fg="#FFFFFF")
+    progress_label.pack(pady=10)
+
+    # Fix button (initially disabled)
+    fix_button = tk.Button(root, text="Fix Detected Issues", state=tk.DISABLED, font=("Helvetica", 12), bg="#b3b3b3", fg="white", command=fake_fix)
+    fix_button.pack(pady=10)
+
+    # Start the GUI loop
+    root.mainloop()
+
+# Main program starts here
+
+# Create a root window for the initial fake alert
+root = tk.Tk()
+root.withdraw()  # Hide the root window initially
+
+# Show the fake alert after a short delay
+root.after(2000, show_fake_alert)  # Show the alert 2 seconds after running the program
+
+# Run the Tkinter main event loop
+root.mainloop()

