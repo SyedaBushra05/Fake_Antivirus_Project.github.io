@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fake Antivirus</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fake Antivirus Protection</h1>
+            <p>Protecting your PC from all kinds of malware (or so it seems!)</p>
+        </header>
+
+        <div class="scan-section">
+            <h2>System Scan</h2>
+            <p>Scanning for threats...</p>
+            <button class="scan-btn" onclick="startScan()">Start Scan</button>
+        </div>
+
+        <div class="alert-section" id="alert-section" style="display:none;">
+            <h2>Warning! Threat Detected!</h2>
+            <p id="threat-message">Your system is infected with malware. Immediate action required!</p>
+            <button class="download-btn" onclick="downloadAntivirus()">Download Fake Antivirus</button>
+        </div>
+
+        <footer>
+            <p>For educational purposes only. This is not a real antivirus.</p>
+        </footer>
+    </div>
+
+    <script>
+        function startScan() {
+            const alertSection = document.getElementById('alert-section');
+            setTimeout(() => {
+                alertSection.style.display = 'block';
+            }, 3000); // Simulates a 3-second scan delay
+        }
+
+        function downloadAntivirus() {
+            alert('Fake Antivirus Downloaded! This is for educational purposes.');
+            window.location.href = "https://github.com/<your-repo>"; // Redirect to your GitHub or download page
+        }
+    </script>
+</body>
+</html>
